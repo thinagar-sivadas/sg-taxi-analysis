@@ -1,5 +1,5 @@
 {
-    "name": "Template Project",
+    "name": "sg-taxi-analysis",
     "dockerComposeFile": "../docker-compose.yml",
     "service": "python",
     "workspaceFolder": "/app",
