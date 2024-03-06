@@ -1,0 +1,13 @@
+services:
+  python:
+    container_name: python
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command:
+      - bash
+      - -c
+      - |
+        pip install -e .
+    volumes:
+      - .:/app:cached
