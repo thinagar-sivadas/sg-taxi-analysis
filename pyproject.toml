@@ -4,28 +4,28 @@ build-backend = "setuptools.build_meta"
 
 
 [project]
-name = "template_project"
+description = "Access to real-time taxi availability data. Returns location coordinates of all Taxis that are currently available for hire. Does not include 'Hired' or 'Busy' Taxis."
+name = "sg-taxi-data"
 requires-python = ">=3.8"
 version = "1.0.0"
-description = "Template Project"
 readme = "README.md"
 license = { file = "LICENSE" }
-authors = [{ name = "Thinagar", email = "thinagar@gmail.com" }]
-maintainers = [{ name = "Thinagar", email = "thinagar@gmail.com" }]
-keywords = ["template-project", "python3"]
-dependencies = []
+authors = [{ name = "Thinagar", email = "thinagarsivadas@gmail.com" }]
+maintainers = [{ name = "Thinagar", email = "thinagarsivadas@gmail.com" }]
+keywords = ["sg-taxi-dataset", "python3"]
+dependencies = ["pydantic", "python-dateutil", "aiohttp", "pandas"]
 
 [project.optional-dependencies]
-dev = ["black", "pre-commit", "pytest", "pylint", "mypy", "isort"]
+dev = ["black", "pre-commit", "pytest", "pylint"]
 
 [project.urls]
 Homepage = "https://example.com"
 Documentation = "https://readthedocs.org"
-Repository = "https://github.com/Thinagar-Sivadas/template-project.git"
-Issues = "https://github.com/Thinagar-Sivadas/template-project/issues"
+Repository = "https://github.com/Thinagar-Sivadas/sg-taxi-data.git"
+Issues = "https://github.com/Thinagar-Sivadas/sg-taxi-data/issues"
 
 [project.scripts]
-template_project = "template_project.main:main"
+get_sg_taxi_data = "sg_taxi_data.api:main"
 
 
 [tool.isort]
@@ -36,7 +36,3 @@ max-line-length = 120
 
 [tool.black]
 line-length = 120
-
-[tool.mypy]
-explicit_package_bases = true
-check_untyped_defs = true
