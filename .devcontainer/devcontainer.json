@@ -1,7 +1,7 @@
 {
     "name": "sg-taxi-analysis",
     "dockerComposeFile": "../docker-compose.yml",
-    "service": "python",
+    "service": "development",
     "workspaceFolder": "/app",
     "shutdownAction": "stopCompose",
     "overrideCommand": true,

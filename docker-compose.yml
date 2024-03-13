@@ -1,21 +1,21 @@
 services:
-  python:
+  development:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile/development.Dockerfile
     command:
       - bash
       - -c
       - |
         pip install -e .
     volumes:
-      - .:/app:cached
+      - .:/app
   dagster-data-pipeline:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile/dagster.Dockerfile
     environment:
-      - DAGSTER_HOME=/app/orchestration_storage
+      - DAGSTER_HOME=/app/dagster_storage
     command:
       - bash
       - -c
@@ -23,6 +23,27 @@ services:
         pip install -e .
         dagster dev -h 0.0.0.0 -p 3000
     volumes:
-      - .:/app:cached
+      - ./dagster_storage/:/app/dagster_storage/
+      - ./data_engineering/:/app/data_engineering/
+      - ./sg_taxi_data/:/app/sg_taxi_data/
     ports:
       - 3000:3000
+  # minio:
+  #   image: "minio/minio:latest"
+  #   ports:
+  #     - "9001:9001"
+  #     - "9000:9000"
+  #   command:
+  #     - "server"
+  #     - "/data"
+  #     - "--console-address"
+  #     - ":9001"
+  #   volumes:
+  #     - "minio:/data"
+  #   environment:
+  #     MINIO_ROOT_USER: "minio"
+  #     MINIO_ROOT_PASSWORD: "minio123"
+volumes:
+  dagster_storage:
+  data_engineering:
+  sg_taxi_data:
