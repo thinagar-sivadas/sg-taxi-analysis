@@ -162,3 +162,10 @@ cython_debug/
 # Dagster
 dagster_storage/*
 !dagster_storage/dagster.yaml
+
+# Minio
+datalake/*
+!datalake/raw/
+!datalake/bronze/
+!datalake/silver/
+!datalake/gold/
