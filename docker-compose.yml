@@ -10,3 +10,19 @@ services:
         pip install -e .
     volumes:
       - .:/app:cached
+  dagster-data-pipeline:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DAGSTER_HOME=/app/orchestration_storage
+    command:
+      - bash
+      - -c
+      - |
+        pip install -e .
+        dagster dev -h 0.0.0.0 -p 3000
+    volumes:
+      - .:/app:cached
+    ports:
+      - 3000:3000
