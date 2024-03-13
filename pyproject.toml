@@ -13,7 +13,14 @@ license = { file = "LICENSE" }
 authors = [{ name = "Thinagar", email = "thinagarsivadas@gmail.com" }]
 maintainers = [{ name = "Thinagar", email = "thinagarsivadas@gmail.com" }]
 keywords = ["sg-taxi-dataset", "python3"]
-dependencies = ["pydantic", "python-dateutil", "aiohttp", "pandas"]
+dependencies = [
+    "pydantic",
+    "python-dateutil",
+    "aiohttp",
+    "pandas",
+    "dagster",
+    "dagster-webserver",
+]
 
 [project.optional-dependencies]
 dev = ["black", "pre-commit", "pytest", "pylint"]
@@ -23,6 +30,9 @@ Homepage = "https://example.com"
 Documentation = "https://readthedocs.org"
 Repository = "https://github.com/Thinagar-Sivadas/sg-taxi-data.git"
 Issues = "https://github.com/Thinagar-Sivadas/sg-taxi-data/issues"
+
+[tool.setuptools]
+packages = ["sg_taxi_data"]
 
 [project.scripts]
 get_sg_taxi_data = "sg_taxi_data.api:main"
@@ -36,3 +46,7 @@ max-line-length = 120
 
 [tool.black]
 line-length = 120
+
+[tool.dagster]
+module_name = "data_engineering"
+code_location_name = 'data engineering'
