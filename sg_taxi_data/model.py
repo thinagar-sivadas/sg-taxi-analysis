@@ -1,14 +1,12 @@
 """Model classes for the Singapore Taxi Data API"""
 
-from typing import Any
-
-from pydantic import BaseModel, Field, computed_field, field_validator
+from pydantic import BaseModel, Field, field_validator
 
 
-class Coordinate(BaseModel, extra="ignore"):
-    """GeoJSON coordinate object"""
+class Geometry(BaseModel, extra="ignore"):
+    """List of GeoJSON coordinate object"""
 
-    coordinate: list[float] = Field(description="Longtitude and Latitude position", frozen=True)
+    coordinates: list[list[float]] = Field(description="List of GeoJSON coordinate")
 
     @field_validator("coordinate")
     @classmethod
@@ -18,29 +16,6 @@ class Coordinate(BaseModel, extra="ignore"):
         if isinstance(v, list) and len(v) != 2:
             raise ValueError("Coordinate must have 2 elements")
         return v
-
-    @computed_field
-    def longtitude(self) -> float:
-        """Return the longtitude of the coordinate"""
-
-        return tuple(self.coordinate)[0]
-
-    @computed_field
-    def latitude(self) -> float:
-        """Return the latitude of the coordinate"""
-
-        return tuple(self.coordinate)[1]
-
-
-class Geometry(BaseModel, extra="ignore"):
-    """List of GeoJSON coordinate object"""
-
-    coordinates: list[list[float]] = Field(description="List of GeoJSON coordinate")
-
-    def model_post_init(self, __context: Any) -> None:
-        values = self.model_dump()
-        values["coordinates"] = [Coordinate(**{"coordinate": c}) for c in values["coordinates"]]
-        self.__dict__.update(values)
 
 
 class ApiInfo(BaseModel):
