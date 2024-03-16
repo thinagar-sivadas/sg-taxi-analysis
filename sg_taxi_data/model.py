@@ -8,14 +8,15 @@ class Geometry(BaseModel, extra="ignore"):
 
     coordinates: list[list[float]] = Field(description="List of GeoJSON coordinate")
 
-    @field_validator("coordinate")
+    @field_validator("coordinates")
     @classmethod
-    def validate_coordinate(cls, v):
+    def validate_coordinate(cls, coordinates):
         """Validate the coordinate field to ensure it is a list of 2 element"""
 
-        if isinstance(v, list) and len(v) != 2:
-            raise ValueError("Coordinate must have 2 elements")
-        return v
+        for coordinate in coordinates:
+            if len(coordinate) != 2:
+                raise ValueError("Coordinate must have 2 elements")
+        return coordinates
 
 
 class ApiInfo(BaseModel):

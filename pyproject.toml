@@ -21,6 +21,7 @@ dependencies = [
     "dagster",
     "dagster-webserver",
     "s3fs",
+    "boto3",
 ]
 
 [project.optional-dependencies]
