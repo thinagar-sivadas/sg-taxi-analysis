@@ -62,7 +62,7 @@ async def send_request(session: aiohttp.ClientSession, interval: str, version: s
     return response
 
 
-async def get_data(version: str = "v1", date_time: str = "today"):
+async def get_data(date_time: str = "today", version: str = "v1"):
     """Get the taxi availability data for the date_time provided"""
 
     async with aiohttp.ClientSession() as session:

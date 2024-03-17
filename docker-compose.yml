@@ -42,7 +42,7 @@ services:
     environment:
       MINIO_ROOT_USER: "minio"
       MINIO_ROOT_PASSWORD: "minio123"
-      MINIO_DEFAULT_BUCKETS: "raw,bronze,silver,gold"
+      MINIO_DEFAULT_BUCKETS: "bronze,silver,gold"
 volumes:
   dagster_storage:
   data_engineering:
