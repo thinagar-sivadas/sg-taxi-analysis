@@ -3,11 +3,15 @@ services:
     build:
       context: .
       dockerfile: Dockerfile/development.Dockerfile
+    ports:
+      - 8888:8888
     command:
       - bash
       - -c
       - |
-        pip install -e .
+        pip install -e .[dev]
+        pre-commit install
+        jupyter notebook --ip 0.0.0.0 --no-browser --allow-root --port 8888 --NotebookApp.token='' --NotebookApp.password=''
     volumes:
       - .:/app
   dagster-data-pipeline:
@@ -38,7 +42,7 @@ services:
     environment:
       MINIO_ROOT_USER: "minio"
       MINIO_ROOT_PASSWORD: "minio123"
-      MINIO_DEFAULT_BUCKETS: "raw,bronze,silver,gold"
+      MINIO_DEFAULT_BUCKETS: "bronze,silver,gold"
 volumes:
   dagster_storage:
   data_engineering:

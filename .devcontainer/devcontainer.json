@@ -4,15 +4,7 @@
     "service": "development",
     "workspaceFolder": "/app",
     "shutdownAction": "stopCompose",
-    "overrideCommand": true,
-    "postCreateCommand": [
-        "bash",
-        "-c",
-        "pip install -e .[dev]",
-        "bash",
-        "-c",
-        "pre-commit install"
-    ],
+    "overrideCommand": false,
     "customizations": {
         "vscode": {
             "extensions": [

@@ -20,10 +20,12 @@ dependencies = [
     "pandas",
     "dagster",
     "dagster-webserver",
+    "s3fs",
+    "boto3",
 ]
 
 [project.optional-dependencies]
-dev = ["black", "pre-commit", "pytest", "pylint"]
+dev = ["black", "pre-commit", "pytest", "pylint", "jupyter"]
 
 [project.urls]
 Homepage = "https://example.com"
