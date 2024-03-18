@@ -165,7 +165,3 @@ dagster_storage/*
 
 # Minio
 datalake/*
-!datalake/raw/
-!datalake/bronze/
-!datalake/silver/
-!datalake/gold/
