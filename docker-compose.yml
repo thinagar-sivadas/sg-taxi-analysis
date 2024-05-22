@@ -2,14 +2,14 @@ services:
   development:
     build:
       context: .
-      dockerfile: Dockerfile/development.Dockerfile
+      dockerfile: dockerfile/development.Dockerfile
     ports:
       - 8888:8888
     command:
       - bash
       - -c
       - |
-        pip install -e .[dev]
+        pip install -r requirements.txt
         pre-commit install
         jupyter notebook --ip 0.0.0.0 --no-browser --allow-root --port 8888 --NotebookApp.token='' --NotebookApp.password=''
     volumes:
@@ -17,19 +17,17 @@ services:
   dagster-data-pipeline:
     build:
       context: .
-      dockerfile: Dockerfile/dagster.Dockerfile
+      dockerfile: dockerfile/dagster.Dockerfile
     environment:
-      - DAGSTER_HOME=/app/dagster_storage
+      - DAGSTER_HOME=/app/orchestration
     command:
       - bash
       - -c
       - |
-        pip install -e .
         dagster dev -h 0.0.0.0 -p 3000
     volumes:
-      - ./dagster_storage/:/app/dagster_storage/
-      - ./data_engineering/:/app/data_engineering/
-      - ./sg_taxi_data/:/app/sg_taxi_data/
+      - ./dagster_service/orchestration/:/app/orchestration/
+      - ./dagster_service/data_pipeline/:/app/data_pipeline/
     ports:
       - 3000:3000
   minio-datalake:
@@ -38,13 +36,33 @@ services:
       - "9001:9001"
       - "9000:9000"
     volumes:
-      - "./datalake:/bitnami/minio/data"
+      - "./datalake_service:/bitnami/minio/data"
     environment:
       MINIO_ROOT_USER: "minio"
       MINIO_ROOT_PASSWORD: "minio123"
-      MINIO_DEFAULT_BUCKETS: "bronze,silver,gold"
+      MINIO_DEFAULT_BUCKETS: "raw,bronze,silver,gold"
+  postgres:
+    build:
+      context: .
+      dockerfile: dockerfile/postgres.Dockerfile
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=taxi
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./postgres_service:/var/lib/postgresql/data
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
 volumes:
-  dagster_storage:
-  data_engineering:
-  sg_taxi_data:
-  datalake:
+  pgadmin-data:
+  postgres_service:

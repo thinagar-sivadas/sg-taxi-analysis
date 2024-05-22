@@ -6,7 +6,7 @@ from importlib import import_module
 from dagster import Definitions, load_assets_from_package_module
 
 # Define the root package
-PROJECT_FOLDER = "data_engineering"
+PROJECT_FOLDER = "data_pipeline"
 ASSET_FOLDER = "assets"
 
 # Load all modules from the root package

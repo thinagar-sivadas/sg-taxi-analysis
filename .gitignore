@@ -160,9 +160,11 @@ cython_debug/
 #.idea/
 
 # Dagster
-dagster_storage/*
-!dagster_storage/dagster.yaml
+dagster_service/orchestration
 
 # Minio
-datalake/*
-!datalake/.gitkeep
+datalake_service/*
+!datalake_service/.gitkeep
+
+# Postgres
+postgres_service
