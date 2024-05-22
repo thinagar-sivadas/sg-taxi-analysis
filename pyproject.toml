@@ -1,45 +1,3 @@
-[build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
-
-
-[project]
-description = "Access to real-time taxi availability data. Returns location coordinates of all Taxis that are currently available for hire. Does not include 'Hired' or 'Busy' Taxis."
-name = "sg-taxi-data"
-requires-python = ">=3.8"
-version = "1.0.0"
-readme = "README.md"
-license = { file = "LICENSE" }
-authors = [{ name = "Thinagar", email = "thinagarsivadas@gmail.com" }]
-maintainers = [{ name = "Thinagar", email = "thinagarsivadas@gmail.com" }]
-keywords = ["sg-taxi-dataset", "python3"]
-dependencies = [
-    "pydantic",
-    "python-dateutil",
-    "aiohttp",
-    "pandas",
-    "dagster",
-    "dagster-webserver",
-    "s3fs",
-    "boto3",
-]
-
-[project.optional-dependencies]
-dev = ["black", "pre-commit", "pytest", "pylint", "jupyter"]
-
-[project.urls]
-Homepage = "https://example.com"
-Documentation = "https://readthedocs.org"
-Repository = "https://github.com/Thinagar-Sivadas/sg-taxi-data.git"
-Issues = "https://github.com/Thinagar-Sivadas/sg-taxi-data/issues"
-
-[tool.setuptools]
-packages = ["sg_taxi_data"]
-
-[project.scripts]
-get_sg_taxi_data = "sg_taxi_data.api:main"
-
-
 [tool.isort]
 profile = 'black'
 
@@ -49,6 +7,9 @@ max-line-length = 120
 [tool.black]
 line-length = 120
 
-[tool.dagster]
-module_name = "data_engineering"
-code_location_name = 'data engineering'
+[tool.pylint]
+init-hook = '''
+import sys
+sys.path.append('./dagster_service')
+sys.path.append('./webapp_service')
+'''

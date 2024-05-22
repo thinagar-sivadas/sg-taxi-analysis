@@ -2,6 +2,7 @@ FROM python:3
 
 WORKDIR /app
 
-ADD pyproject.toml /app/pyproject.toml
+ADD /dagster_service/ /app/
 
 RUN pip install --upgrade pip
+RUN pip install -r requirements.txt

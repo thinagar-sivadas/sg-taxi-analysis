@@ -1,0 +1,3 @@
+[tool.dagster]
+module_name = "data_pipeline"
+code_location_name = 'data pipeline'
