@@ -9,8 +9,6 @@ services:
       - bash
       - -c
       - |
-        pip install -r requirements.txt
-        pre-commit install
         jupyter notebook --ip 0.0.0.0 --no-browser --allow-root --port 8888 --NotebookApp.token='' --NotebookApp.password=''
     volumes:
       - .:/app
