@@ -168,3 +168,6 @@ datalake_service/*
 
 # Postgres
 postgres_service
+
+# Kafka
+kafka_service

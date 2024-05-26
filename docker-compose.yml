@@ -28,39 +28,70 @@ services:
       - ./dagster_service/data_pipeline/:/app/data_pipeline/
     ports:
       - 3000:3000
+    depends_on:
+      - minio-datalake
+      - postgres-db
+      - kafka-stream-processing
   minio-datalake:
     image: bitnami/minio:latest
     ports:
-      - "9001:9001"
-      - "9000:9000"
+      - 9001:9001
+      - 9000:9000
     volumes:
-      - "./datalake_service:/bitnami/minio/data"
+      - ./datalake_service:/bitnami/minio/data
     environment:
-      MINIO_ROOT_USER: "minio"
-      MINIO_ROOT_PASSWORD: "minio123"
-      MINIO_DEFAULT_BUCKETS: "raw,bronze,silver,gold"
-  postgres:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio123
+      MINIO_DEFAULT_BUCKETS: raw,bronze,silver,gold
+  postgres-db:
     build:
       context: .
       dockerfile: dockerfile/postgres.Dockerfile
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=taxi
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: taxi
     ports:
-      - '5432:5432'
+      - 5432:5432
     volumes:
       - ./postgres_service:/var/lib/postgresql/data
-  pgadmin:
+  postgres-ui:
     image: dpage/pgadmin4
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: root
       PGADMIN_CONFIG_SERVER_MODE: 'False'
     ports:
-      - "5050:80"
+      - 5050:80
     volumes:
       - pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      - postgres-db
+  kafka-stream-processing:
+    image: bitnami/kafka:latest
+    ports:
+      - 9092:9092
+      - 9094:9094
+    environment:
+      KAFKA_CFG_NODE_ID: 0
+      KAFKA_CFG_PROCESS_ROLES: controller,broker
+      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 0@127.0.0.1:9093
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+    volumes:
+      - ./kafka_service:/bitnami/kafka
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - 8080:8080
+    environment:
+      DYNAMIC_CONFIG_ENABLED: 'true'
+      KAFKA_CLUSTERS_0_NAME: kafka-stream-processing
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-stream-processing:9092
+    depends_on:
+      - kafka-stream-processing
 volumes:
   pgadmin-data:
   postgres_service:
+  kafka_service:
