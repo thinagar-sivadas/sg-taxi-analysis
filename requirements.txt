@@ -13,3 +13,4 @@ pylint
 jupyter
 aiohttp
 kafka-python
+confluent-kafka
