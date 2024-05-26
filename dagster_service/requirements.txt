@@ -2,3 +2,5 @@ pandas
 dagster
 dagster-webserver
 boto3
+aiohttp
+python-dateutil

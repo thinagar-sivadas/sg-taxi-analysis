@@ -11,3 +11,5 @@ black
 pre-commit
 pylint
 jupyter
+aiohttp
+kafka-python
