@@ -1,12 +1,4 @@
-python-dateutil
 pandas
-dagster
-boto3
-s3fs
-pyarrow
-sqlalchemy
-psycopg2
-tenacity
 black
 pre-commit
 pylint
@@ -14,3 +6,10 @@ jupyter
 aiohttp
 kafka-python
 confluent-kafka
+dagster
+# dagster
+# boto3
+# s3fs
+# pyarrow
+# sqlalchemy
+# psycopg2
