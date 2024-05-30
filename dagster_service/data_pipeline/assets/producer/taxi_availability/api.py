@@ -38,7 +38,7 @@ class TaxiAvailability:
         date_time_to_process = datetime.datetime.strptime(self.date, "%Y-%m-%d").replace(
             tzinfo=tz.gettz(self.local_timezone)
         )
-        current_date_time = datetime.datetime.now(datetime.UTC).astimezone(tz.gettz(self.local_timezone))
+        current_date_time = datetime.datetime.now().astimezone(tz.gettz(self.local_timezone))
 
         if date_time_to_process.date() < current_date_time.date():
             date_time = await self.generate_date_time_interval()
