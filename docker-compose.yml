@@ -17,7 +17,7 @@ services:
       context: .
       dockerfile: dockerfile/dagster.Dockerfile
     environment:
-      - DAGSTER_HOME=/app/orchestration
+        DAGSTER_HOME: /app/orchestration
     command:
       - bash
       - -c
