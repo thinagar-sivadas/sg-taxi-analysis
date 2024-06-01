@@ -7,6 +7,7 @@ from dagster import (
     BackfillPolicy,
     DailyPartitionsDefinition,
     asset,
+    get_dagster_logger,
 )
 from data_pipeline.assets.producer.taxi_availability_api import TaxiAvailability
 
@@ -23,7 +24,7 @@ from data_pipeline.assets.producer.taxi_availability_api import TaxiAvailability
         )
     ),
     partitions_def=DailyPartitionsDefinition(start_date="2024-05-01", timezone="Asia/Singapore", end_offset=1),
-    backfill_policy=BackfillPolicy.multi_run(max_partitions_per_run=5),
+    backfill_policy=BackfillPolicy.multi_run(max_partitions_per_run=1),
     owners=["thinagarsivadas@gmail.com"],
 )
 async def generate_taxi_availability(context: AssetExecutionContext) -> None:
@@ -31,7 +32,7 @@ async def generate_taxi_availability(context: AssetExecutionContext) -> None:
 
     taxi_availability = TaxiAvailability(
         date=context.partition_key_range.start,
-        context=context,
         max_coroutine=10,
+        logger=get_dagster_logger(),
     )
     await taxi_availability.retrieve_data()

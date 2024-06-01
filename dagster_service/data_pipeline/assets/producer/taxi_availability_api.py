@@ -2,12 +2,12 @@
 
 import asyncio
 import datetime
+import logging
 from dataclasses import dataclass
 from datetime import time
 
 import aiohttp
 import pandas as pd
-from dagster import AssetExecutionContext
 from dateutil import tz
 
 
@@ -16,7 +16,7 @@ class TaxiAvailability:
     """TaxiAvailability class for taxi availability data retrieval"""
 
     date: str
-    context: AssetExecutionContext
+    logger: logging.Logger
     max_coroutine: int = 10
     local_timezone: str = "Asia/Singapore"
 
@@ -55,24 +55,33 @@ class TaxiAvailability:
         """Get request for the given date time"""
 
         async with semaphore:
-            self.context.log.info(
-                f"[Coroutine {coroutine}] Retrieving taxi availability data for {date_time} -> Starting"
+            self.logger.info(
+                "[Coroutine %s] Retrieving taxi availability data for %s -> Starting",
+                coroutine,
+                date_time,
             )
             response = await session.get(
                 "https://api.data.gov.sg/v1/transport/taxi-availability", params={"date_time": date_time}, timeout=300
             )
 
             if response.status != 200:
-                self.context.log.info(
-                    f"[Coroutine {coroutine}] Retrieving taxi availability data for {date_time} -> Unsuccessful "
-                    + f"[Status code: {response.status}, Reason: {response.reason}, URL: {response.url}]"
+                self.logger.info(
+                    "[Coroutine %s] Retrieving taxi availability data for %s -> "
+                    + "Unsuccessful [Status code: %s, Reason: %s, URL: %s]",
+                    coroutine,
+                    date_time,
+                    response.status,
+                    response.reason,
+                    response.url,
                 )
                 # Function Send data to kafka dlq
             else:
                 # Make use for response to send data to kafka
                 _ = await response.json()
-                self.context.log.info(
-                    f"[Coroutine {coroutine}] Retrieving taxi availability data for {date_time} -> Completed"
+                self.logger.info(
+                    "[Coroutine %s] Retrieving taxi availability data for %s -> Completed",
+                    coroutine,
+                    date_time,
                 )
                 # Function Send data to kafka
 
@@ -84,7 +93,13 @@ class TaxiAvailability:
             headers={"content-type": "application/json"}, raise_for_status=False
         ) as session:
             coroutine_request_list = [
-                self.get_request(session, semaphore, date_time, ind + 1) for ind, date_time in enumerate(date_time_list)
+                self.get_request(
+                    session=session,
+                    semaphore=semaphore,
+                    date_time=date_time,
+                    coroutine=ind + 1,
+                )
+                for ind, date_time in enumerate(date_time_list)
             ]
             await asyncio.gather(*coroutine_request_list)
 
