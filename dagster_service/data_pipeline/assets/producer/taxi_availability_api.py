@@ -7,6 +7,7 @@ from datetime import time
 
 import aiohttp
 import pandas as pd
+from dagster import AssetExecutionContext
 from dateutil import tz
 
 
@@ -15,6 +16,7 @@ class TaxiAvailability:
     """TaxiAvailability class for taxi availability data retrieval"""
 
     date: str
+    context: AssetExecutionContext
     max_coroutine: int = 10
     local_timezone: str = "Asia/Singapore"
 
@@ -53,20 +55,25 @@ class TaxiAvailability:
         """Get request for the given date time"""
 
         async with semaphore:
-            print(f"[Coroutine {coroutine}] Retrieving taxi availability data for {date_time} -> Starting")
+            self.context.log.info(
+                f"[Coroutine {coroutine}] Retrieving taxi availability data for {date_time} -> Starting"
+            )
             response = await session.get(
                 "https://api.data.gov.sg/v1/transport/taxi-availability", params={"date_time": date_time}, timeout=300
             )
 
             if response.status != 200:
-                print(
+                self.context.log.info(
                     f"[Coroutine {coroutine}] Retrieving taxi availability data for {date_time} -> Unsuccessful "
                     + f"[Status code: {response.status}, Reason: {response.reason}, URL: {response.url}]"
                 )
                 # Function Send data to kafka dlq
             else:
+                # Make use for response to send data to kafka
                 _ = await response.json()
-                print(f"[Coroutine {coroutine}] Retrieving taxi availability data for {date_time} -> Completed")
+                self.context.log.info(
+                    f"[Coroutine {coroutine}] Retrieving taxi availability data for {date_time} -> Completed"
+                )
                 # Function Send data to kafka
 
     async def retrieve_response(self, date_time_list: list[str]) -> None:
@@ -85,4 +92,5 @@ class TaxiAvailability:
         """Retrieve data for the given date"""
 
         date_time = await self.get_date_time()
+        # Remove list slicing for production
         await self.retrieve_response(date_time[0:10])
