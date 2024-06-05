@@ -17,7 +17,7 @@ services:
       context: .
       dockerfile: dockerfile/dagster.Dockerfile
     environment:
-        DAGSTER_HOME: /app/orchestration
+      DAGSTER_HOME: /app/orchestration
     command:
       - bash
       - -c
@@ -31,7 +31,7 @@ services:
     depends_on:
       - minio-datalake
       - postgres-db
-      - kafka-stream-processing
+      - redpanda
   minio-datalake:
     image: bitnami/minio:latest
     ports:
@@ -67,31 +67,50 @@ services:
       - pgadmin-data:/var/lib/pgadmin
     depends_on:
       - postgres-db
-  kafka-stream-processing:
-    image: bitnami/kafka:latest
-    ports:
-      - 9092:9092
-      - 9094:9094
-    environment:
-      KAFKA_CFG_NODE_ID: 0
-      KAFKA_CFG_PROCESS_ROLES: controller,broker
-      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
-      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
-      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 0@127.0.0.1:9093
-      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+  redpanda:
+    image: docker.redpanda.com/redpandadata/redpanda:v24.1.6
+    command:
+      - redpanda
+      - start
+      - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:19092
+      - --advertise-kafka-addr internal://redpanda:9092,external://localhost:19092
+      - --pandaproxy-addr internal://0.0.0.0:8082,external://0.0.0.0:18082
+      - --advertise-pandaproxy-addr internal://redpanda:8082,external://localhost:18082
+      - --schema-registry-addr internal://0.0.0.0:8081,external://0.0.0.0:18081
+      - --rpc-addr redpanda:33145
+      - --advertise-rpc-addr redpanda:33145
+      - --mode dev-container
+      - --smp 1
+      - --default-log-level=info
     volumes:
-      - ./kafka_service:/bitnami/kafka
-  kafka-ui:
-    image: provectuslabs/kafka-ui:latest
+      - ./redpanda_service:/var/lib/redpanda/data
+    ports:
+      - 18081:18081
+      - 18082:18082
+      - 19092:19092
+      - 19644:9644
+  redpanda-console:
+    image: docker.redpanda.com/redpandadata/console:v2.6.0
+    entrypoint: /bin/sh
+    command: -c 'echo "$$CONSOLE_CONFIG_FILE" > /tmp/config.yml; /app/console'
+    environment:
+      CONFIG_FILEPATH: /tmp/config.yml
+      CONSOLE_CONFIG_FILE: |
+        kafka:
+          brokers: ["redpanda:9092"]
+          schemaRegistry:
+            enabled: true
+            urls: ["http://redpanda:8081"]
+        redpanda:
+          adminApi:
+            enabled: true
+            urls: ["http://redpanda:9644"]
     ports:
       - 8080:8080
-    environment:
-      DYNAMIC_CONFIG_ENABLED: 'true'
-      KAFKA_CLUSTERS_0_NAME: kafka-stream-processing
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-stream-processing:9092
     depends_on:
-      - kafka-stream-processing
+      - redpanda
+
 volumes:
   pgadmin-data:
   postgres_service:
-  kafka_service:
+  redpanda_service:

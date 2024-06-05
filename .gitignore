@@ -170,4 +170,4 @@ datalake_service/*
 postgres_service
 
 # Kafka
-kafka_service
+redpanda_service
