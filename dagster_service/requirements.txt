@@ -2,3 +2,4 @@ pandas
 dagster
 dagster-webserver
 aiohttp
+quixstreams

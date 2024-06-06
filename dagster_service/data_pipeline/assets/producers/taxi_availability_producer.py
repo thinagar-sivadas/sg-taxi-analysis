@@ -9,7 +9,8 @@ from dagster import (
     asset,
     get_dagster_logger,
 )
-from data_pipeline.assets.producer.taxi_availability_api import TaxiAvailability
+from data_pipeline.assets.producers.producer import Producer
+from data_pipeline.assets.producers.taxi_availability_api import TaxiAvailability
 
 LOCAL_TIMEZONE = "Asia/Singapore"
 
@@ -32,10 +33,12 @@ LOCAL_TIMEZONE = "Asia/Singapore"
 async def generate_taxi_availability(context: AssetExecutionContext) -> None:
     """Producer to generate taxi availability data"""
 
+    producer = Producer(topic_name="TaxiAvailability", logger=get_dagster_logger())
     taxi_availability = TaxiAvailability(
         date=context.partition_key_range.start,
         max_coroutine=10,
         logger=get_dagster_logger(),
         local_timezone=LOCAL_TIMEZONE,
+        producer=producer,
     )
     await taxi_availability.retrieve_data()

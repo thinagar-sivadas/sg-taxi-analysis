@@ -2,12 +2,14 @@
 
 import asyncio
 import datetime
+import json
 import logging
 from dataclasses import dataclass
 from datetime import time
 
 import aiohttp
 import pandas as pd
+from data_pipeline.assets.producers.producer import Producer
 from dateutil import tz
 
 
@@ -19,6 +21,7 @@ class TaxiAvailability:
     logger: logging.Logger
     max_coroutine: int = 10
     local_timezone: str = "Asia/Singapore"
+    producer: Producer = None
 
     async def generate_date_time_interval(self) -> list[str]:
         """Generate date time interval for the given date"""
@@ -76,14 +79,18 @@ class TaxiAvailability:
                 )
                 # Function Send data to kafka dlq
             else:
-                # Make use for response to send data to kafka
-                _ = await response.json()
+                response = await response.json()
                 self.logger.info(
                     "[Coroutine %s] Retrieving taxi availability data for %s -> Completed",
                     coroutine,
                     date_time,
                 )
-                # Function Send data to kafka
+                if self.producer:
+                    self.producer.produce(
+                        key=date_time.split("T")[0],
+                        value=json.dumps(response),
+                        custom_message=f"[Coroutine {coroutine}] ",
+                    )
 
     async def retrieve_response(self, date_time_list: list[str]) -> None:
         """Retrieve response for the given date time list"""
