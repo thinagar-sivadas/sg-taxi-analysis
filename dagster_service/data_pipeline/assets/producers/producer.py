@@ -35,7 +35,7 @@ class Producer:
         """Delivery report callback to log the delivery status of the message"""
 
         if err is not None:
-            self.logger.error("Message delivery failed: %s", err)
+            self.logger.error("%s Message delivery failed: %s", custom_message, err)
         else:
             self.logger.info(
                 "%s Message delivered to -> (Topic: %s, Partition: %s, Key: %s, Offset: %s)",

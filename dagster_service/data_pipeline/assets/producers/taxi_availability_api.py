@@ -89,7 +89,7 @@ class TaxiAvailability:
                     self.producer.produce(
                         key=date_time.split("T")[0],
                         value=json.dumps(response),
-                        custom_message=f"[Coroutine {coroutine}] ",
+                        custom_message=f"[Coroutine {coroutine}]",
                     )
 
     async def retrieve_response(self, date_time_list: list[str]) -> None:
