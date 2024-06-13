@@ -14,6 +14,7 @@ class Consumer:
     topic_name: str
     consumer_group: str
     logger: logging.Logger
+    timeout: float = 1.5
     auto_offset_reset: str = "earliest"
     broker_address: str = "redpanda:9092"
     app: Application = field(init=False, default=None)
@@ -38,7 +39,7 @@ class Consumer:
             with self.app.get_consumer() as consumer:
                 consumer.subscribe([self.topic_name])
                 while True:
-                    msg = consumer.poll(1.5)
+                    msg = consumer.poll(self.timeout)
 
                     if msg is None:
                         self.logger.info("No message to consume")
