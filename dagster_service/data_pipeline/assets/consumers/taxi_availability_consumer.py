@@ -31,6 +31,7 @@ def consume_taxi_availability() -> None:
         topic_name="TaxiAvailability",
         consumer_group="GetTaxiAvailability-Datalake",
         logger=get_dagster_logger(),
+        timeout=1.5,
         auto_offset_reset="earliest",
     )
     consumer.consume()
