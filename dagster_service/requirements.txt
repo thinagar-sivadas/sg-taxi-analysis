@@ -3,3 +3,4 @@ dagster
 dagster-webserver
 aiohttp
 quixstreams
+pyspark

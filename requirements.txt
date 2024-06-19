@@ -6,6 +6,7 @@ jupyter
 aiohttp
 dagster
 quixstreams
+pyspark
 # boto3
 # s3fs
 # pyarrow
