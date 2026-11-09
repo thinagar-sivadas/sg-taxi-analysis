@@ -70,7 +70,7 @@ services:
       - postgres-db
       - redpanda
   minio-datalake:
-    image: bitnami/minio:latest
+    image: soldevelo/minio:latest
     ports:
       - 9001:9001
       - 9000:9000
